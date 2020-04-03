@@ -7,12 +7,20 @@
 //
 
 import AVFoundation
+import Combine
 
-class Sounds {
-
-    static var audioPlayer: AVAudioPlayer?
+class Sounds: ObservableObject {
     
-    static func setAudioPlayer(soundfile: String) {
+    var audioPlayer: AVAudioPlayer?
+
+    @Published var sliderVolume: Float = 0.5 {
+      willSet {
+        audioPlayer?.volume = sliderVolume
+        print(newValue)
+      }
+    }
+    
+    func setAudioPlayer(soundfile: String) {
         if let path = Bundle.main.path(forResource: soundfile, ofType: nil) {
 
             do {
@@ -24,16 +32,16 @@ class Sounds {
         }
     }
 
-    static func playAudio() {
+    func playAudio() {
         audioPlayer?.play()
         audioPlayer?.volume = 0.5
     }
     
-    static func pauseAudio() {
+    func pauseAudio() {
         audioPlayer?.pause()
     }
     
-    static func setVolume(volume: Float) {
+    func setVolume(volume: Float) {
         audioPlayer?.volume = volume
     }
 }

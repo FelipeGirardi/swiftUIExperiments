@@ -7,8 +7,10 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
+    @EnvironmentObject var soundData: Sounds
     @State private var searchText : String = ""
     @State var isPlaying : Bool = false
     @State var volumeLevel: Float = 0.5
@@ -39,7 +41,7 @@ struct ContentView: View {
                 
                 Button(action: {
                     self.isPlaying.toggle()
-                    Sounds.playAudio()
+                    self.soundData.playAudio()
 
                 }, label: {
                     Image(systemName: "play")
@@ -49,7 +51,7 @@ struct ContentView: View {
                 
                 Button(action: {
                     self.isPlaying.toggle()
-                    Sounds.pauseAudio()
+                    self.soundData.pauseAudio()
 
                 }, label: {
                     Image(systemName: "pause")
@@ -60,19 +62,16 @@ struct ContentView: View {
             
             HStack {
                 
-            Text("Volume")
-                .padding()
+                Text("Volume")
+                    .padding()
                 
-            Slider(value: $volumeLevel, in: 0...1, step: 0.05, onEditingChanged: { data in
-                Sounds.setVolume(volume: self.volumeLevel)
-                print(self.volumeLevel)
-            })
-                .padding()
+                Slider(value: $soundData.sliderVolume)
+                    .padding()
             }
             
         }
         .onAppear() {
-            Sounds.setAudioPlayer(soundfile: "Gruss vom Laettweiher.mp3")
+            self.soundData.setAudioPlayer(soundfile: "Gruss vom Laettweiher.mp3")
         }
     }
 }

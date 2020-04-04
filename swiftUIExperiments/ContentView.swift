@@ -13,7 +13,51 @@ struct ContentView: View {
     @EnvironmentObject var soundData: Sounds
     @State private var searchText : String = ""
     @State var isPlaying : Bool = false
-    @State var volumeLevel: Float = 0.5
+    @State var volumeLevel: Double = 0.5
+    @State private var currentPlayerTime: Double = 0.0
+    
+    var playAndPauseButtons: some View {
+        HStack {
+            Spacer()
+            
+            Button(action: {
+                self.isPlaying.toggle()
+                self.soundData.playAudio()
+
+            }, label: {
+                Image(systemName: "play")
+            })
+            
+            Spacer()
+            
+            Button(action: {
+                self.isPlaying.toggle()
+                self.soundData.pauseAudio()
+
+            }, label: {
+                Image(systemName: "pause")
+            })
+            
+            Spacer()
+        }
+    }
+    
+    var audioTimeSlider: some View {
+        HStack {
+            GeometryReader { geometry in
+                Slider(value: self.$currentPlayerTime, in: 0.0...self.soundData.audioLength)
+                    .onReceive(self.soundData.currentTimeInSecondsPass) { _ in
+                        self.currentPlayerTime = self.soundData.currentTimeInSeconds
+                    }
+                    .gesture(DragGesture(minimumDistance: 0)
+                    .onChanged({ value in
+                        let coefficient = abs(self.soundData.audioLength / Double(geometry.size.width))
+                        self.soundData.rewindTime(to: Double(value.location.x) * coefficient)
+                    }))
+            }
+            .frame(height: 30)
+        }
+    }
     
     var body: some View {
         VStack {
@@ -36,29 +80,15 @@ struct ContentView: View {
             
             Spacer()
             
-            HStack {
-                Spacer()
-                
-                Button(action: {
-                    self.isPlaying.toggle()
-                    self.soundData.playAudio()
+            playAndPauseButtons
+            
+            audioTimeSlider
 
-                }, label: {
-                    Image(systemName: "play")
-                })
-                
-                Spacer()
-                
-                Button(action: {
-                    self.isPlaying.toggle()
-                    self.soundData.pauseAudio()
-
-                }, label: {
-                    Image(systemName: "pause")
-                })
-                
-                Spacer()
-            }
+//            Slider(value: self.$currentPlayerTime, in: 0.0...Double(3.17))
+//                .onReceive(self.soundData.currentTimeInSecondsPass) { _ in
+//                // here I changed the value every second
+//                    self.currentPlayerTime = self.soundData.currentTimeInSeconds
+//            }
             
             HStack {
                 

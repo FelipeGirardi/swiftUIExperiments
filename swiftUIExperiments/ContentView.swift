@@ -16,29 +16,36 @@ struct ContentView: View {
     @State var volumeLevel: Double = 0.5
     @State private var currentPlayerTime: Double = 0.0
     
-    var playAndPauseButtons: some View {
-        HStack {
-            Spacer()
+    var playOrPauseButton: some View {
+        Group {
+            //Spacer()
             
-            Button(action: {
-                self.isPlaying.toggle()
-                self.soundData.playAudio()
+            if(isPlaying) {
+                
+                Button(action: {
+                    self.isPlaying.toggle()
+                    self.soundData.pauseAudio()
 
-            }, label: {
-                Image(systemName: "play")
-            })
-            
-            Spacer()
-            
-            Button(action: {
-                self.isPlaying.toggle()
-                self.soundData.pauseAudio()
+                }, label: {
+                    Image(systemName: "pause")
+                })
+                
+            } else {
+                
+                Button(action: {
+                    self.isPlaying.toggle()
+                    self.soundData.playAudio()
 
-            }, label: {
-                Image(systemName: "pause")
-            })
+                }, label: {
+                    Image(systemName: "play")
+                })
+                
+                //Spacer()
+                
+                
             
-            Spacer()
+            }
+            //Spacer()
         }
     }
     
@@ -80,9 +87,11 @@ struct ContentView: View {
             
             Spacer()
             
-            playAndPauseButtons
+            playOrPauseButton
+                .padding()
             
             audioTimeSlider
+                .padding()
 
 //            Slider(value: self.$currentPlayerTime, in: 0.0...Double(3.17))
 //                .onReceive(self.soundData.currentTimeInSecondsPass) { _ in
@@ -96,8 +105,11 @@ struct ContentView: View {
                     .padding()
                 
                 Slider(value: $soundData.sliderVolume)
+                    .frame(width: 100)
+                    .rotationEffect(.degrees(-90))
                     .padding()
             }
+            .padding()
             
         }
         .onAppear() {
@@ -109,6 +121,7 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(Sounds())
     }
 }
 
